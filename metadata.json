@@ -1,0 +1,5 @@
+{
+  "name": "Pagos Proveedores y Nómina",
+  "description": "Una aplicación empresarial para la gestión y seguimiento de pagos a proveedores y nómina, con control de radicados, estados y soportes documentales.",
+  "requestFramePermissions": []
+}
