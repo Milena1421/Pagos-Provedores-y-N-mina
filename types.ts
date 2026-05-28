@@ -1,4 +1,3 @@
-
 export enum PaymentStatus {
   Radicado = 'Radicado',
   Pagado = 'Pagado',
@@ -8,16 +7,17 @@ export enum PaymentStatus {
 export enum Category {
   Honorarios = 'Honorarios',
   Impuesto = 'Impuesto',
-  Polizas = 'Pólizas',
+  Reembolso = 'Reembolso',
+  Polizas = 'Polizas',
   SeguridadSocial = 'Seguridad Social',
-  Nomina = 'Nómina',
-  ServiciosPublicos = 'Servicios Públicos'
+  Nomina = 'Nomina',
+  ServiciosPublicos = 'Servicios Publicos'
 }
 
 export enum DocumentType {
-  CC = 'Cédula de Ciudadanía',
+  CC = 'Cedula de Ciudadania',
   NIT = 'NIT',
-  CE = 'Cédula de Extranjería',
+  CE = 'Cedula de Extranjeria',
   TI = 'Tarjeta de Identidad',
   PA = 'Pasaporte',
   PEP = 'Permiso Especial de Permanencia'
@@ -31,8 +31,8 @@ export enum BankAccountType {
 export interface SupportFile {
   id: string;
   name: string;
-  data: string; // URL o Base64
-  type: string; // mimeType
+  data: string;
+  type: string;
 }
 
 export interface Provider {
@@ -53,18 +53,39 @@ export interface PaymentRecord {
   mesContable: string;
   fechaDocumento: string;
   fechaPago: string;
+  fechaPagoReal?: string;
+  numeroDocumento?: string;
   proveedor: string;
   identificacion: string;
   categoria: Category;
   descripcion: string;
+  subtotal?: number;
+  iva?: number;
+  retefuente?: number;
   valor: number;
   observacion: string;
   estado: PaymentStatus;
   supports: SupportFile[];
-  comprobantePago?: string; 
-  comprobanteFile?: SupportFile; // Archivo de soporte del pago realizado
-  motivoDevolucion?: string;    
+  comprobantePago?: string;
+  comprobanteFile?: SupportFile;
+  motivoDevolucion?: string;
   createdAt: number;
 }
 
 export type ViewType = 'dashboard' | 'form' | 'table' | 'directory';
+
+export type UserRole = 'Administrador' | 'Pagos' | 'Contabilidad';
+
+export interface UserPermissions {
+  views: ViewType[];
+  canManageNotifications: boolean;
+}
+
+export interface AppUser {
+  id: string;
+  username: string;
+  password: string;
+  displayName: string;
+  role: UserRole;
+  permissions: UserPermissions;
+}

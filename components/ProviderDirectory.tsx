@@ -23,6 +23,12 @@ export const ProviderDirectory: React.FC<ProviderDirectoryProps> = ({ providers,
   const [viewingProvider, setViewingProvider] = useState<Provider | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
 
+  const sanitizeTextField = (value: unknown) => {
+    if (typeof value !== 'string') return '';
+    const normalized = value.trim();
+    return normalized.toLowerCase() === 'null' ? '' : normalized;
+  };
+
   const cleanId = (id: string) => {
     return id.toString().trim().replace(/\./g, '').replace(/[^0-9\-]/g, '');
   };
@@ -45,7 +51,7 @@ export const ProviderDirectory: React.FC<ProviderDirectoryProps> = ({ providers,
     const { name, value } = e.target;
     setFormData(prev => ({ 
       ...prev, 
-      [name]: name === 'identificacion' ? cleanId(value) : value 
+      [name]: name === 'identificacion' ? cleanId(value) : sanitizeTextField(value) 
     }));
   };
 
@@ -65,7 +71,14 @@ export const ProviderDirectory: React.FC<ProviderDirectoryProps> = ({ providers,
   };
 
   const handleEditClick = (provider: Provider) => {
-    setFormData(provider);
+    setFormData({
+      ...provider,
+      correo: sanitizeTextField(provider.correo),
+      direccion: sanitizeTextField(provider.direccion),
+      telefono: sanitizeTextField(provider.telefono),
+      entidadBancaria: sanitizeTextField(provider.entidadBancaria),
+      numeroCuenta: sanitizeTextField(provider.numeroCuenta),
+    });
     setEditingId(provider.identificacion);
     const formElement = document.getElementById('provider-form');
     formElement?.scrollIntoView({ behavior: 'smooth' });
@@ -80,11 +93,11 @@ export const ProviderDirectory: React.FC<ProviderDirectoryProps> = ({ providers,
       identificacion: sId,
       nombre: sName,
       tipoDocumento: formData.tipoDocumento as DocumentType,
-      correo: formData.correo?.trim() || '',
-      direccion: formData.direccion?.trim() || '',
-      telefono: formData.telefono?.trim() || '',
-      entidadBancaria: formData.entidadBancaria?.trim() || '',
-      numeroCuenta: formData.numeroCuenta?.trim() || '',
+      correo: sanitizeTextField(formData.correo),
+      direccion: sanitizeTextField(formData.direccion),
+      telefono: sanitizeTextField(formData.telefono),
+      entidadBancaria: sanitizeTextField(formData.entidadBancaria),
+      numeroCuenta: sanitizeTextField(formData.numeroCuenta),
       tipoCuenta: formData.tipoCuenta as BankAccountType,
     };
 
@@ -147,7 +160,7 @@ export const ProviderDirectory: React.FC<ProviderDirectoryProps> = ({ providers,
             identificacion: rawId,
             nombre: standardizeText(rawName),
             tipoDocumento: (rowData[2]?.replace(/^"|"$/g, '').trim() as DocumentType) || DocumentType.NIT,
-            correo: rowData[3]?.replace(/^"|"$/g, '').trim() || '',
+            correo: sanitizeTextField(rowData[3]?.replace(/^"|"$/g, '').trim()),
             direccion: finalDireccion,
             telefono: finalTelefono,
             entidadBancaria: rowData[6]?.replace(/^"|"$/g, '').trim() || '',
@@ -212,7 +225,7 @@ export const ProviderDirectory: React.FC<ProviderDirectoryProps> = ({ providers,
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-tighter">Correo Electrónico</label>
-                <input type="email" name="correo" value={formData.correo || ''} onChange={handleInputChange} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="correo@ejemplo.com" />
+                <input type="email" name="correo" value={sanitizeTextField(formData.correo)} onChange={handleInputChange} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="correo@ejemplo.com" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-tighter">Teléfono Principal</label>

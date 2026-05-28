@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Generated bank/payment exports
+Pago_Nomina_*.csv
+Pago_Nomina_*.xls
+Pago_Nomina_*.xlsx
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

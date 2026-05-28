@@ -10,10 +10,10 @@ PASO 2: Enlazar con tu proyecto (usa tu ID de proyecto: xfsbogjozqvaphoapqnz)
 > supabase link --project-ref xfsbogjozqvaphoapqnz
 
 PASO 3: Crear la carpeta de la función
-> supabase functions new send-payment-email
+> supabase functions new resend-email
 
 PASO 4: Copia y pega el siguiente código en el archivo: 
-./supabase/functions/send-payment-email/index.ts
+./supabase/functions/resend-email/index.ts
 
 -------------------------------------------------------------------------
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
@@ -81,7 +81,7 @@ PASO 5: Configurar la API KEY de Resend en Supabase (SECRETO)
 > supabase secrets set RESEND_API_KEY=re_tu_llave_de_resend_aqui
 
 PASO 6: Desplegar la función
-> supabase functions deploy send-payment-email
+> supabase functions deploy resend-email
 
 ---
 Una vez ejecutado el Paso 6, el error "Failed to send a request" desaparecerá y los correos llegarán instantáneamente a ${adminEmail}.
