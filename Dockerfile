@@ -18,7 +18,8 @@ ENV VITE_SUPABASE_URL=""
 ENV VITE_SUPABASE_ANON_KEY=""
 ENV GEMINI_API_KEY=""
 
-RUN rm /etc/nginx/conf.d/default.conf && \
+RUN mkdir -p /etc/nginx/templates && \
+    rm /etc/nginx/conf.d/default.conf && \
     printf '%s\n' \
     'server {' \
     '  listen ${PORT};' \
