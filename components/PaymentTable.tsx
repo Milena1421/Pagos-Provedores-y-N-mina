@@ -10,9 +10,10 @@ interface PaymentTableProps {
   onDelete: (id: string) => void;
   onStatusChange: (id: string, newStatus: PaymentStatus, extra?: { comprobante?: string, motivo?: string, comprobanteFile?: SupportFile, fechaPagoReal?: string }) => void;
   onResendEmail: (record: PaymentRecord) => void;
+  canManagePaymentStatus: boolean;
 }
 
-export const PaymentTable: React.FC<PaymentTableProps> = ({ records, providers, onEdit, onDelete, onStatusChange, onResendEmail }) => {
+export const PaymentTable: React.FC<PaymentTableProps> = ({ records, providers, onEdit, onDelete, onStatusChange, onResendEmail, canManagePaymentStatus }) => {
   const [filter, setFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>(PaymentStatus.Radicado);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -518,11 +519,13 @@ export const PaymentTable: React.FC<PaymentTableProps> = ({ records, providers, 
                           >📄</button>
                         )}
                       </div>
-                      <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-90">
-                        <button onClick={() => onStatusChange(r.id, PaymentStatus.Radicado)} className="w-7 h-7 rounded-xl border-2 border-blue-600 text-[10px] font-black text-blue-600 hover:bg-blue-600 hover:text-white transition-all">R</button>
-                        <button onClick={() => { setTempFechaPago(new Date().toISOString().split('T')[0]); setPendingAction({id: r.id, status: PaymentStatus.Pagado}); }} className="w-7 h-7 rounded-xl border-2 border-emerald-600 text-[10px] font-black text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all">P</button>
-                        <button onClick={() => setPendingAction({id: r.id, status: PaymentStatus.Devuelto})} className="w-7 h-7 rounded-xl border-2 border-rose-600 text-[10px] font-black text-rose-600 hover:bg-rose-600 hover:text-white transition-all">D</button>
-                      </div>
+                      {canManagePaymentStatus && (
+                        <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-90">
+                          <button onClick={() => onStatusChange(r.id, PaymentStatus.Radicado)} className="w-7 h-7 rounded-xl border-2 border-blue-600 text-[10px] font-black text-blue-600 hover:bg-blue-600 hover:text-white transition-all">R</button>
+                          <button onClick={() => { setTempFechaPago(new Date().toISOString().split('T')[0]); setPendingAction({id: r.id, status: PaymentStatus.Pagado}); }} className="w-7 h-7 rounded-xl border-2 border-emerald-600 text-[10px] font-black text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all">P</button>
+                          <button onClick={() => setPendingAction({id: r.id, status: PaymentStatus.Devuelto})} className="w-7 h-7 rounded-xl border-2 border-rose-600 text-[10px] font-black text-rose-600 hover:bg-rose-600 hover:text-white transition-all">D</button>
+                        </div>
+                      )}
                     </div>
                   </td>
                   <td className="px-8 py-6 text-right">

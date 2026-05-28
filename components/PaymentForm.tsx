@@ -18,6 +18,7 @@ interface PaymentFormProps {
   initialData?: PaymentRecord | null;
   nextRadicado: string;
   providers: Provider[];
+  canManagePaymentStatus: boolean;
 }
 
 export const PaymentForm: React.FC<PaymentFormProps> = ({
@@ -25,7 +26,8 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
   onCancel,
   initialData,
   nextRadicado,
-  providers
+  providers,
+  canManagePaymentStatus
 }) => {
   const COMPANY_IDENTIFICATION = '901290421';
   const COMPANY_NAME_HINTS = ['INGENIERIA 365', 'INGENIERIA365'];
@@ -266,6 +268,9 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isPaymentDateTouched, setIsPaymentDateTouched] = useState(false);
+  const availablePaymentStatuses = canManagePaymentStatus
+    ? Object.values(PaymentStatus)
+    : [(formData.estado as PaymentStatus) || PaymentStatus.Radicado];
 
   const sanitizeTextField = (value: unknown) => {
     if (typeof value !== 'string') return '';
@@ -1193,11 +1198,15 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
           <div className="space-y-6">
             <label className="block text-xs font-black text-slate-900 uppercase tracking-[0.2em]">Estado del Radicado</label>
             <div className="flex space-x-3 bg-slate-50 p-3 rounded-[1.5rem] border border-slate-100 shadow-inner">
-              {Object.values(PaymentStatus).map((status) => (
+              {availablePaymentStatuses.map((status) => (
                 <button
                   key={status}
                   type="button"
-                  onClick={() => setFormData((prev) => ({ ...prev, estado: status }))}
+                  disabled={!canManagePaymentStatus}
+                  onClick={() => {
+                    if (!canManagePaymentStatus) return;
+                    setFormData((prev) => ({ ...prev, estado: status }));
+                  }}
                   className={`flex-1 py-5 rounded-xl text-[10px] font-black transition-all transform active:scale-95 shadow-md uppercase tracking-widest ${
                     formData.estado === status
                       ? status === PaymentStatus.Pagado
@@ -1206,7 +1215,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
                           ? 'bg-rose-600 text-white shadow-rose-200'
                           : 'bg-slate-900 text-white shadow-slate-200'
                       : 'bg-white text-slate-400 hover:bg-slate-50'
-                  }`}
+                  } ${canManagePaymentStatus ? '' : 'cursor-not-allowed opacity-80'}`}
                 >
                   {status}
                 </button>

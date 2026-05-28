@@ -79,6 +79,7 @@ export type UserRole = 'Administrador' | 'Pagos' | 'Contabilidad';
 export interface UserPermissions {
   views: ViewType[];
   canManageNotifications: boolean;
+  canManagePaymentStatus: boolean;
 }
 
 export interface AppUser {

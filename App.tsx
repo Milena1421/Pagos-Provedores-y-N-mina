@@ -27,7 +27,8 @@ const APP_USERS: AppUser[] = [
     role: 'Administrador',
     permissions: {
       views: ['table', 'directory', 'form'],
-      canManageNotifications: true
+      canManageNotifications: true,
+      canManagePaymentStatus: true
     }
   },
   {
@@ -38,7 +39,8 @@ const APP_USERS: AppUser[] = [
     role: 'Pagos',
     permissions: {
       views: ['table', 'form'],
-      canManageNotifications: false
+      canManageNotifications: false,
+      canManagePaymentStatus: true
     }
   },
   {
@@ -49,7 +51,8 @@ const APP_USERS: AppUser[] = [
     role: 'Contabilidad',
     permissions: {
       views: ['table', 'form'],
-      canManageNotifications: false
+      canManageNotifications: false,
+      canManagePaymentStatus: false
     }
   }
 ];
@@ -428,7 +431,17 @@ const App: React.FC = () => {
   };
 
   const handleSubmission = async (data: { record: PaymentRecord; provider: Provider }) => {
-    const { record, provider } = data;
+    const { provider } = data;
+    const record = currentUser?.permissions.canManagePaymentStatus
+      ? data.record
+      : {
+          ...data.record,
+          estado: editingRecord?.estado || PaymentStatus.Radicado,
+          comprobantePago: editingRecord?.comprobantePago || data.record.comprobantePago,
+          comprobanteFile: editingRecord?.comprobanteFile || data.record.comprobanteFile,
+          motivoDevolucion: editingRecord?.motivoDevolucion || data.record.motivoDevolucion,
+          fechaPagoReal: editingRecord?.fechaPagoReal || data.record.fechaPagoReal
+        };
     const isNew = !editingRecord;
 
     try {
@@ -509,6 +522,11 @@ const App: React.FC = () => {
     newStatus: PaymentStatus,
     extra?: { comprobante?: string; motivo?: string; comprobanteFile?: SupportFile; fechaPagoReal?: string }
   ) => {
+    if (!currentUser?.permissions.canManagePaymentStatus) {
+      showNotification('Contabilidad no puede gestionar estados de pago o devolucion.', 'warning');
+      return;
+    }
+
     try {
       const updates: any = {
         estado: newStatus,
@@ -624,6 +642,7 @@ const App: React.FC = () => {
               : '0001'
           }
           providers={providers}
+          canManagePaymentStatus={currentUser.permissions.canManagePaymentStatus}
         />
       )}
 
@@ -638,6 +657,7 @@ const App: React.FC = () => {
           onDelete={deleteRecord}
           onStatusChange={updateStatus}
           onResendEmail={handleResendEmail}
+          canManagePaymentStatus={currentUser.permissions.canManagePaymentStatus}
         />
       )}
 
