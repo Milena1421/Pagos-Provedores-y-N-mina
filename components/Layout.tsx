@@ -109,7 +109,6 @@ export const Layout: React.FC<LayoutProps> = ({
           <div className="rounded-lg bg-slate-50 p-3">
             <p className="text-xs text-slate-500">Sesion iniciada como</p>
             <p className="text-sm font-semibold text-slate-800">{currentUser.displayName}</p>
-            <p className="mt-1 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600">{currentUser.role}</p>
             <button
               type="button"
               onClick={onLogout}
@@ -132,7 +131,6 @@ export const Layout: React.FC<LayoutProps> = ({
           <div className="flex items-center space-x-4">
             <div className="hidden text-right md:block">
               <p className="text-xs font-semibold text-slate-800">{currentUser.displayName}</p>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{currentUser.role}</p>
             </div>
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
               {initials}
