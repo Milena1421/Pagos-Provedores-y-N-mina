@@ -476,7 +476,7 @@ export const PaymentTable: React.FC<PaymentTableProps> = ({ records, providers, 
                   </td>
                   <td className="px-8 py-8">
                     <div className="max-w-[420px] truncate text-base font-black text-slate-900 uppercase tracking-tight">{r.proveedor}</div>
-                    <div className="text-[10px] text-slate-500 font-mono mt-1 font-bold">{r.identificacion} • {r.categoria}</div>
+                    <div className="mt-2 font-mono text-sm font-black text-slate-600">{r.identificacion} • {r.categoria}</div>
                   </td>
                   <td className="px-8 py-8 text-right">
                     <div className="ml-auto min-w-[280px] space-y-2">
