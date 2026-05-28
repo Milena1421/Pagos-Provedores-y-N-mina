@@ -63,34 +63,10 @@ if (-not $repoExists) {
 }
 
 Write-Host "Construyendo imagen $image..."
-$cloudBuildConfig = New-TemporaryFile
-@'
-steps:
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - build
-      - -t
-      - ${_IMAGE}
-      - --build-arg
-      - VITE_SUPABASE_URL=${_VITE_SUPABASE_URL}
-      - --build-arg
-      - VITE_SUPABASE_ANON_KEY=${_VITE_SUPABASE_ANON_KEY}
-      - --build-arg
-      - GEMINI_API_KEY=${_GEMINI_API_KEY}
-      - .
-images:
-  - ${_IMAGE}
-'@ | Set-Content -Path $cloudBuildConfig -Encoding UTF8
-
-try {
-    gcloud builds submit `
-        --config $cloudBuildConfig `
-        --substitutions "_IMAGE=$image,_VITE_SUPABASE_URL=$ViteSupabaseUrl,_VITE_SUPABASE_ANON_KEY=$ViteSupabaseAnonKey,_GEMINI_API_KEY=$GeminiApiKey" `
-        .
-}
-finally {
-    Remove-Item -LiteralPath $cloudBuildConfig -Force -ErrorAction SilentlyContinue
-}
+gcloud builds submit `
+    --config cloudbuild.yaml `
+    --substitutions "_REGION=$Region,_REPOSITORY=$Repository,_SERVICE_NAME=$ServiceName,_IMAGE_TAG=$ImageTag,_VITE_SUPABASE_URL=$ViteSupabaseUrl,_VITE_SUPABASE_ANON_KEY=$ViteSupabaseAnonKey,_GEMINI_API_KEY=$GeminiApiKey" `
+    .
 
 $authFlag = if ($AllowUnauthenticated) { "--allow-unauthenticated" } else { "--no-allow-unauthenticated" }
 

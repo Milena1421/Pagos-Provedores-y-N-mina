@@ -15,6 +15,10 @@ ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
 ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 ENV GEMINI_API_KEY=$GEMINI_API_KEY
 
+RUN test -n "$VITE_SUPABASE_URL" || (echo "Missing build arg: VITE_SUPABASE_URL" && exit 1)
+RUN test -n "$VITE_SUPABASE_ANON_KEY" || (echo "Missing build arg: VITE_SUPABASE_ANON_KEY" && exit 1)
+RUN test -n "$GEMINI_API_KEY" || (echo "Missing build arg: GEMINI_API_KEY" && exit 1)
+
 RUN npm run build
 
 FROM nginx:1.27-alpine AS runtime
