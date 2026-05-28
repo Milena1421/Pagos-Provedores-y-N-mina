@@ -3,9 +3,6 @@ substitutions:
   _REPOSITORY: cloud-run
   _SERVICE_NAME: pagos-i365
   _IMAGE_TAG: latest
-  _VITE_SUPABASE_URL: ""
-  _VITE_SUPABASE_ANON_KEY: ""
-  _GEMINI_API_KEY: ""
 
 steps:
   - name: gcr.io/cloud-builders/docker
@@ -13,12 +10,6 @@ steps:
       - build
       - -t
       - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:${_IMAGE_TAG}
-      - --build-arg
-      - VITE_SUPABASE_URL=${_VITE_SUPABASE_URL}
-      - --build-arg
-      - VITE_SUPABASE_ANON_KEY=${_VITE_SUPABASE_ANON_KEY}
-      - --build-arg
-      - GEMINI_API_KEY=${_GEMINI_API_KEY}
       - .
 
 images:

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { supabase } from '../App';
+import { appConfig } from '../config';
 import {
   BankAccountType,
   Category,
@@ -654,7 +655,11 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
       const base64Data = await readFileAsBase64(file);
       const pureBase64 = base64Data.split(',')[1];
 
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      if (!appConfig.geminiApiKey) {
+        throw new Error('Configura GEMINI_API_KEY para habilitar la lectura con IA.');
+      }
+
+      const ai = new GoogleGenAI({ apiKey: appConfig.geminiApiKey });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: {

@@ -65,7 +65,7 @@ if (-not $repoExists) {
 Write-Host "Construyendo imagen $image..."
 gcloud builds submit `
     --config cloudbuild.yaml `
-    --substitutions "_REGION=$Region,_REPOSITORY=$Repository,_SERVICE_NAME=$ServiceName,_IMAGE_TAG=$ImageTag,_VITE_SUPABASE_URL=$ViteSupabaseUrl,_VITE_SUPABASE_ANON_KEY=$ViteSupabaseAnonKey,_GEMINI_API_KEY=$GeminiApiKey" `
+    --substitutions "_REGION=$Region,_REPOSITORY=$Repository,_SERVICE_NAME=$ServiceName,_IMAGE_TAG=$ImageTag" `
     .
 
 $authFlag = if ($AllowUnauthenticated) { "--allow-unauthenticated" } else { "--no-allow-unauthenticated" }
@@ -78,6 +78,7 @@ gcloud run deploy $ServiceName `
     --port 8080 `
     --memory 512Mi `
     --cpu 1 `
+    --set-env-vars "VITE_SUPABASE_URL=$ViteSupabaseUrl,VITE_SUPABASE_ANON_KEY=$ViteSupabaseAnonKey,GEMINI_API_KEY=$GeminiApiKey" `
     $authFlag
 
 Write-Host "Despliegue finalizado."

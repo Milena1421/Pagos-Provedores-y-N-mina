@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { PaymentRecord, PaymentStatus } from '../types';
 import { GoogleGenAI } from '@google/genai';
+import { appConfig } from '../config';
 
 interface DashboardProps {
   records: PaymentRecord[];
@@ -45,7 +46,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ records, onAddClick }) => 
 
     setLoadingInsight(true);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      if (!appConfig.geminiApiKey) {
+        setInsight('Configura GEMINI_API_KEY para habilitar el analisis con IA.');
+        return;
+      }
+
+      const ai = new GoogleGenAI({ apiKey: appConfig.geminiApiKey });
       const prompt = `Analiza los siguientes datos de pagos a proveedores y nomina.
       Proporciona un resumen ejecutivo muy breve (3 frases) en espanol sobre el estado financiero actual.
       Mes filtrado: ${selectedMonth === 'todos' ? 'Todos los meses' : selectedMonth}

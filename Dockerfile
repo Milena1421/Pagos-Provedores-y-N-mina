@@ -7,18 +7,6 @@ RUN npm ci
 
 COPY . .
 
-ARG VITE_SUPABASE_URL
-ARG VITE_SUPABASE_ANON_KEY
-ARG GEMINI_API_KEY
-
-ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
-ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
-ENV GEMINI_API_KEY=$GEMINI_API_KEY
-
-RUN test -n "$VITE_SUPABASE_URL" || (echo "Missing build arg: VITE_SUPABASE_URL" && exit 1)
-RUN test -n "$VITE_SUPABASE_ANON_KEY" || (echo "Missing build arg: VITE_SUPABASE_ANON_KEY" && exit 1)
-RUN test -n "$GEMINI_API_KEY" || (echo "Missing build arg: GEMINI_API_KEY" && exit 1)
-
 RUN npm run build
 
 FROM nginx:1.27-alpine AS runtime
@@ -26,6 +14,9 @@ FROM nginx:1.27-alpine AS runtime
 COPY --from=build /app/dist /usr/share/nginx/html
 
 ENV PORT=8080
+ENV VITE_SUPABASE_URL=""
+ENV VITE_SUPABASE_ANON_KEY=""
+ENV GEMINI_API_KEY=""
 
 RUN rm /etc/nginx/conf.d/default.conf && \
     printf '%s\n' \
@@ -45,6 +36,19 @@ RUN rm /etc/nginx/conf.d/default.conf && \
     '    try_files $uri =404;' \
     '  }' \
     '}' > /etc/nginx/templates/default.conf.template
+
+RUN printf '%s\n' \
+    '#!/bin/sh' \
+    'set -eu' \
+    'cat > /usr/share/nginx/html/env-config.js <<EOF' \
+    'window.__APP_CONFIG__ = {' \
+    '  VITE_SUPABASE_URL: "${VITE_SUPABASE_URL}",' \
+    '  VITE_SUPABASE_ANON_KEY: "${VITE_SUPABASE_ANON_KEY}",' \
+    '  GEMINI_API_KEY: "${GEMINI_API_KEY}"' \
+    '};' \
+    'EOF' \
+    > /docker-entrypoint.d/40-env-config.sh && \
+    chmod +x /docker-entrypoint.d/40-env-config.sh
 
 EXPOSE 8080
 

@@ -6,11 +6,13 @@ import { LoginScreen } from './components/LoginScreen';
 import { PaymentForm } from './components/PaymentForm';
 import { PaymentTable } from './components/PaymentTable';
 import { ProviderDirectory } from './components/ProviderDirectory';
+import { appConfig, missingRequiredConfig } from './config';
 import { AppUser, PaymentRecord, PaymentStatus, Provider, SupportFile, ViewType } from './types';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(
+  appConfig.supabaseUrl || 'https://missing-config.supabase.co',
+  appConfig.supabaseAnonKey || 'missing-config'
+);
 
 const SESSION_KEY = 'control_pagos_current_user';
 const TAX_BREAKDOWN_CACHE_KEY = 'control_pagos_tax_breakdown_cache';
@@ -55,6 +57,25 @@ const APP_USERS: AppUser[] = [
 const getDefaultView = (user: AppUser | null): ViewType => user?.permissions.views[0] || 'table';
 
 const App: React.FC = () => {
+  if (missingRequiredConfig.length > 0) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center px-6">
+        <div className="max-w-xl rounded-2xl border border-white/10 bg-white/10 p-8 shadow-2xl">
+          <p className="text-xs font-black uppercase tracking-[0.3em] text-emerald-300">Configuracion pendiente</p>
+          <h1 className="mt-4 text-3xl font-black tracking-tight">Faltan variables para conectar Supabase</h1>
+          <p className="mt-4 text-sm leading-6 text-slate-200">
+            Configura estas variables de entorno en Cloud Run y vuelve a desplegar el servicio:
+          </p>
+          <ul className="mt-4 space-y-2 text-sm font-mono text-emerald-100">
+            {missingRequiredConfig.map((name) => (
+              <li key={name}>{name}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
   const [records, setRecords] = useState<PaymentRecord[]>([]);
   const [providers, setProviders] = useState<Provider[]>([]);
   const [currentUser, setCurrentUser] = useState<AppUser | null>(() => {
