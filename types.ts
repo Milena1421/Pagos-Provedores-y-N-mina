@@ -11,7 +11,8 @@ export enum Category {
   Polizas = 'Polizas',
   SeguridadSocial = 'Seguridad Social',
   Nomina = 'Nomina',
-  ServiciosPublicos = 'Servicios Publicos'
+  ServiciosPublicos = 'Servicios Publicos',
+  OtrosGastos = 'Otros Gastos'
 }
 
 export enum DocumentType {
