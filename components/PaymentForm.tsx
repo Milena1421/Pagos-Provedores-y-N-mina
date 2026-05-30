@@ -858,10 +858,6 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
     const currentValue = normalizeAmount(formData.valor);
     const subtotalToSave =
       currentSubtotal > 0 ? currentSubtotal : currentIva === 0 && currentReteFuente === 0 ? currentValue : 0;
-    const payableAmount = hasTaxBreakdown(subtotalToSave, currentIva, currentReteFuente)
-      ? calculatePayableAmount(subtotalToSave, currentIva, currentReteFuente)
-      : currentValue;
-
     const record: PaymentRecord = {
       id: initialData?.id || crypto.randomUUID(),
       radicado: initialData?.radicado || `RAD-${nextRadicado}`,
@@ -876,7 +872,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
       subtotal: subtotalToSave,
       iva: currentIva,
       retefuente: currentReteFuente,
-      valor: payableAmount,
+      valor: currentValue,
       observacion: formData.observacion || '',
       estado: (formData.estado as PaymentStatus) || PaymentStatus.Radicado,
       supports,
@@ -1070,10 +1066,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
                 name="valor"
                 value={formData.valor}
                 onChange={handleInputChange}
-                readOnly={hasTaxBreakdown(formData.subtotal, formData.iva, formData.retefuente)}
-                className={`w-full px-5 py-4 border-2 border-slate-100 rounded-2xl text-xl font-black text-indigo-900 outline-none focus:border-slate-900 transition-all shadow-sm ${
-                  hasTaxBreakdown(formData.subtotal, formData.iva, formData.retefuente) ? 'bg-indigo-50/70 cursor-not-allowed' : ''
-                }`}
+                className="w-full px-5 py-4 border-2 border-slate-100 rounded-2xl text-xl font-black text-indigo-900 outline-none focus:border-slate-900 transition-all shadow-sm"
                 placeholder="0.00"
                 required
               />
